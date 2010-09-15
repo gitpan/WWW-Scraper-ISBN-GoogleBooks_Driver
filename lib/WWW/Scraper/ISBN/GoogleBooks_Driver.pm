@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 #--------------------------------------------------------------------------
 
@@ -120,6 +120,7 @@ sub search {
 
 	# The Book page
     my $html = $mech->content();
+    $json =~ s/&#39;/'/;
 
 	return $self->handler("Failed to find that book on GoogleBooks website. [$isbn]")
 		if($html =~ m!Sorry, we couldn't find any matches for!si);
