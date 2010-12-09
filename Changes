@@ -1,5 +1,10 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.04    09/12/2010
+        - amended pingtest() in network tests.
+        - added further skip test if test books are withdrawn from the site.
+        - updated published date in tests.
+
 0.03    06/10/2010
         - fixed skip count.
         - provided alternate ping test methods.

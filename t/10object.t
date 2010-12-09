@@ -34,7 +34,7 @@ my %tests = (
         [ 'is',     'title',        'Touching from a Distance: Ian Curtis and Joy Division'  ],
         [ 'is',     'author',       'Deborah Curtis'    ],
         [ 'is',     'publisher',    'Faber and Faber'   ],
-        [ 'is',     'pubdate',      '2007'   ],
+        [ 'is',     'pubdate',      '2008'   ],
         [ 'is',     'pages',        240                 ],
         [ 'is',     'image_link',   'http://bks9.books.google.com/books?id=h_sRGgAACAAJ&printsec=frontcover&img=1&zoom=1&sig=ACfU3U2XdlHKLyOC0u8RsirTjjNkWuc9zg' ],
         [ 'is',     'thumb_link',   'http://bks9.books.google.com/books?id=h_sRGgAACAAJ&printsec=frontcover&img=1&zoom=1&sig=ACfU3U2XdlHKLyOC0u8RsirTjjNkWuc9zg' ],
@@ -78,6 +78,8 @@ SKIP: {
         SKIP: {
             skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
                 if($error =~ /website appears to be unavailable/);
+            skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
+                if($error =~ /Failed to find that book/ || !$record->found);
 
             unless($record->found) {
                 diag($record->error);
@@ -111,8 +113,12 @@ sub pingtest {
                 $^O =~ /dos|os2|mswin32|netware|cygwin/i    ? "ping -n 1 $domain "
                                                             : "ping -c 1 $domain >/dev/null 2>&1";
 
-    system($cmd);
-    my $retcode = $? >> 8;
-    # ping returns 1 if unable to connect
+    eval { system($cmd) }; 
+    if($@) {                # can't find ping, or wrong arguments?
+        diag();
+        return 1;
+    }
+
+    my $retcode = $? >> 8;  # ping returns 1 if unable to connect
     return $retcode;
 }
