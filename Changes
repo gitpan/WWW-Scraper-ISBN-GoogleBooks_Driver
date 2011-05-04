@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.05    04/05/2011
+        - upgraded to Test::CPAN::Meta::JSON for tests.
+        - Google now produces broken XHTML :(
+
 0.04    09/12/2010
         - amended pingtest() in network tests.
         - added further skip test if test books are withdrawn from the site.

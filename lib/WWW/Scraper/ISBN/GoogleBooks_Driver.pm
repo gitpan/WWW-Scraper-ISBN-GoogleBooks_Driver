@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 #--------------------------------------------------------------------------
 
@@ -127,6 +127,7 @@ sub search {
 
 #use Data::Dumper;
 #print STDERR "\n# " . Dumper($data);
+#print STDERR "\n# html=[$html]\n";
 
     my ($publisher)                     = $html =~ m!<td class="metadata_label">Publisher</td><td class="metadata_value"><span dir=ltr>([^<]+)</span></td>!i;
     ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher);
@@ -146,7 +147,7 @@ sub search {
     ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
     ($data->{author})                   = $html =~ m!<td class="metadata_label">Author</td><td class="metadata_value"><a class="primary" href="[^"]+" dir=ltr>([^<]+)</a></td>!i;
     ($data->{title})                    = $html =~ m!<td class="metadata_label">Title</td><td class="metadata_value"><span dir=ltr>([^<]+)</span>!i;
-    ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" />!si;
+    ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;
     ($data->{pages})                    = $html =~ m!<td class="metadata_label">Length</td><td class="metadata_value"><span dir=ltr>(\d+) pages</span></td>!s;
 
 	# trim top and tail
@@ -212,7 +213,7 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2010,2011 Barbie for Miss Barbell Productions
 
   This module is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
