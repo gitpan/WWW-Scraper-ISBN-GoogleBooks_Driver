@@ -17,14 +17,14 @@ my %tests = (
         [ 'is',     'isbn13',       '9780571220557'     ],
         [ 'is',     'ean13',        '9780571220557'     ],
         [ 'is',     'title',        'The never-ending days of being dead: dispatches from the frontline of science'            ],
-        [ 'is',     'author',       'Marcus Chown'   ],
-        [ 'is',     'publisher',    'Faber'    ],
-        [ 'is',     'pubdate',      '2007' ],
+        [ 'is',     'author',       'Marcus Chown'      ],
+        [ 'is',     'publisher',    'Faber'             ],
+        [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        '309'               ],
-        [ 'is',     'image_link',   'http://bks1.books.google.com/books?id=vZ4KHAAACAAJ&printsec=frontcover&img=1&zoom=1&sig=ACfU3U2z74rrtKn1HpH1GNdj4aFA00baXg' ],
-        [ 'is',     'thumb_link',   'http://bks1.books.google.com/books?id=vZ4KHAAACAAJ&printsec=frontcover&img=1&zoom=1&sig=ACfU3U2z74rrtKn1HpH1GNdj4aFA00baXg' ],
-        [ 'like',   'description',  qr|Learn how the big bang may have been spawned| ],
-        [ 'is',     'book_link',    q|http://books.google.com/books?id=vZ4KHAAACAAJ&source=gbs_ViewAPI| ]
+        [ 'like',   'image_link',   qr|bks1.books.google.com/books\?id=vZ4KHAAACAAJ|    ],
+        [ 'like',   'thumb_link',   qr|bks1.books.google.com/books\?id=vZ4KHAAACAAJ|    ],
+        [ 'like',   'description',  qr|Learn how the big bang may have been spawned|    ],
+        [ 'like',   'book_link',    qr|books.google.com/books\?id=vZ4KHAAACAAJ|         ]
     ],
     '9780571239566' => [
         [ 'is',     'isbn',         '9780571239566'     ],
@@ -34,12 +34,12 @@ my %tests = (
         [ 'is',     'title',        'Touching from a Distance: Ian Curtis and Joy Division'  ],
         [ 'is',     'author',       'Deborah Curtis'    ],
         [ 'is',     'publisher',    'Faber and Faber'   ],
-        [ 'is',     'pubdate',      '2008'   ],
+        [ 'is',     'pubdate',      '2008'              ],
         [ 'is',     'pages',        240                 ],
-        [ 'is',     'image_link',   'http://bks9.books.google.com/books?id=h_sRGgAACAAJ&printsec=frontcover&img=1&zoom=1&sig=ACfU3U2XdlHKLyOC0u8RsirTjjNkWuc9zg' ],
-        [ 'is',     'thumb_link',   'http://bks9.books.google.com/books?id=h_sRGgAACAAJ&printsec=frontcover&img=1&zoom=1&sig=ACfU3U2XdlHKLyOC0u8RsirTjjNkWuc9zg' ],
+        [ 'like',   'image_link',   qr|bks9.books.google.com/books\?id=h_sRGgAACAAJ|    ],
+        [ 'like',   'thumb_link',   qr|bks9.books.google.com/books\?id=h_sRGgAACAAJ|    ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
-        [ 'is',     'book_link',    q|http://books.google.com/books?id=h_sRGgAACAAJ&source=gbs_ViewAPI| ]
+        [ 'like',   'book_link',    qr|books.google.com/books\?id=h_sRGgAACAAJ|         ]
     ],
 );
 
