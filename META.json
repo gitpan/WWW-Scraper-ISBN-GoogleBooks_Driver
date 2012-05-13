@@ -1,6 +1,6 @@
 {
     "name": "WWW-Scraper-ISBN-GoogleBooks_Driver",
-    "version": "0.06",
+    "version": "0.07",
     "abstract": "Search driver for Google Books online book catalog",
     "author": ["Barbie <barbie@cpan.org>"],
 
@@ -21,6 +21,7 @@
     "prereqs" : {
         "runtime" : {
             "requires" : {
+                "perl": "5.006",
                 "JSON": "0",
                 "WWW::Mechanize": "1.60",
                 "WWW::Scraper::ISBN": "0.25",
@@ -29,14 +30,14 @@
         },
         "test" : {
             "requires": {
-                "Test::More": "0.45"
+                "IO::File": "0",
+                "Test::More": "0.70"
             },
             "recommends": {
-                "Test::More": "0.70",
                 "Test::Pod": "1.00",
                 "Test::Pod::Coverage": "0.08",
-                "Test::CPAN::Meta": "0.13",
-                "Test::CPAN::Meta::JSON": "0.10"
+                "Test::CPAN::Meta": "0",
+                "Test::CPAN::Meta::JSON": "0"
             }
         }
     },
@@ -44,7 +45,7 @@
     "provides": {
         "WWW::Scraper::ISBN::GoogleBooks_Driver": {
             "file": "lib/WWW/Scraper/ISBN/GoogleBooks_Driver.pm",
-            "version": "0.06"
+            "version": "0.07"
         }
     },
     "no_index": {

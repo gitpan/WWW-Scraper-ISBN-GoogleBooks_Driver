@@ -16,15 +16,15 @@ my %tests = (
         [ 'is',     'isbn10',       '057122055X'        ],
         [ 'is',     'isbn13',       '9780571220557'     ],
         [ 'is',     'ean13',        '9780571220557'     ],
-        [ 'is',     'title',        'The never-ending days of being dead: dispatches from the frontline of science'            ],
+        [ 'is',     'title',        'The Never-Ending Days of Being Dead: Dispatches from the Frontline of Science' ],
         [ 'is',     'author',       'Marcus Chown'      ],
         [ 'is',     'publisher',    'Faber'             ],
         [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        '309'               ],
-        [ 'like',   'image_link',   qr|bks1.books.google.com/books\?id=vZ4KHAAACAAJ|    ],
-        [ 'like',   'thumb_link',   qr|bks1.books.google.com/books\?id=vZ4KHAAACAAJ|    ],
+        [ 'like',   'image_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
+        [ 'like',   'thumb_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
         [ 'like',   'description',  qr|Learn how the big bang may have been spawned|    ],
-        [ 'like',   'book_link',    qr|books.google.com/books\?id=vZ4KHAAACAAJ|         ]
+        [ 'like',   'book_link',    qr|books.google.[\w.]+/books\?id=\w+|               ]
     ],
     '9780571239566' => [
         [ 'is',     'isbn',         '9780571239566'     ],
@@ -33,13 +33,13 @@ my %tests = (
         [ 'is',     'ean13',        '9780571239566'     ],
         [ 'is',     'title',        'Touching from a Distance: Ian Curtis and Joy Division'  ],
         [ 'is',     'author',       'Deborah Curtis'    ],
-        [ 'is',     'publisher',    'Faber and Faber'   ],
-        [ 'is',     'pubdate',      '2008'              ],
+        [ 'like',   'publisher',    qr|Faber \S+ Faber| ],
+        [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        240                 ],
-        [ 'like',   'image_link',   qr|bks9.books.google.com/books\?id=h_sRGgAACAAJ|    ],
-        [ 'like',   'thumb_link',   qr|bks9.books.google.com/books\?id=h_sRGgAACAAJ|    ],
+        [ 'like',   'image_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
+        [ 'like',   'thumb_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
-        [ 'like',   'book_link',    qr|books.google.com/books\?id=h_sRGgAACAAJ|         ]
+        [ 'like',   'book_link',    qr|books.google.[\w.]+/books\?id=\w+|               ]
     ],
 );
 
@@ -53,12 +53,12 @@ my $scraper = WWW::Scraper::ISBN->new();
 isa_ok($scraper,'WWW::Scraper::ISBN');
 
 SKIP: {
-	skip "Can't see a network connection", $tests+1   if(pingtest($CHECK_DOMAIN));
+    skip "Can't see a network connection", $tests+1   if(pingtest($CHECK_DOMAIN));
 
-	$scraper->drivers($DRIVER);
+    $scraper->drivers($DRIVER);
 
     # this ISBN doesn't exist
-	my $isbn = "1234512345";
+    my $isbn = "1234512345";
     my $record;
 
     eval { $record = $scraper->search($isbn); };
@@ -68,7 +68,7 @@ SKIP: {
     elsif($record->found) {
         ok(0,'Unexpectedly found a non-existent book');
     } else {
-		like($record->error,qr/Failed to find that book on|website appears to be unavailable/);
+        like($record->error,qr/Failed to find that book on|website appears to be unavailable/);
     }
 
     for my $isbn (keys %tests) {

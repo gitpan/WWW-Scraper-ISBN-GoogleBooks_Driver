@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 #--------------------------------------------------------------------------
 
@@ -129,10 +129,10 @@ sub search {
 #print STDERR "\n# " . Dumper($data);
 #print STDERR "\n# html=[$html]\n";
 
-    my ($publisher)                     = $html =~ m!<td class="metadata_label">Publisher</td><td class="metadata_value"><span dir=ltr>([^<]+)</span></td>!i;
+    my ($publisher)                     = $html =~ m!<td class="metadata_label"><span[^>]*>Publisher</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!i;
     ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher);
 
-    my ($isbns)                         = $html =~ m!<td class="metadata_label">ISBN</td><td class="metadata_value"><span dir=ltr>([^<]+)</span></td>!i;
+    my ($isbns)                         = $html =~ m!<td class="metadata_label"><span[^>]*>ISBN</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!i;
     my (@isbns)                         = split(qr/\s*,\s*/,$isbns);
     for my $value (@isbns) {
         $data->{isbn13} = $value    if(length $value == 13);
@@ -145,13 +145,19 @@ sub search {
 
     ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
     ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
-    ($data->{author})                   = $html =~ m!<td class="metadata_label">Author</td><td class="metadata_value"><a class="primary" href="[^"]+" dir=ltr>([^<]+)</a></td>!i;
+    ($data->{author})                   = $html =~ m!<td class="metadata_label">Author</td><td class="metadata_value">(.*?)</td>!i;
     ($data->{title})                    = $html =~ m!<td class="metadata_label">Title</td><td class="metadata_value"><span dir=ltr>([^<]+)</span>!i;
     ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;
-    ($data->{pages})                    = $html =~ m!<td class="metadata_label">Length</td><td class="metadata_value"><span dir=ltr>(\d+) pages</span></td>!s;
+    ($data->{pages})                    = $html =~ m!<td class="metadata_label"><span[^>]*>Length</span></td><td class="metadata_value"><span[^>]*>(\d+) pages</span></td>!s;
+    
+    # remove HTML tags
+    for(qw(author)) {
+        next unless(defined $data->{$_});
+        $data->{$_} =~ s!<[^>]+>!!g;
+    }
 
 	# trim top and tail
-	foreach (keys %$data) { next unless(defined $data->{$_});$data->{$_} =~ s/^\s+//;$data->{$_} =~ s/\s+$//; }
+	for(keys %$data) { next unless(defined $data->{$_});$data->{$_} =~ s/^\s+//;$data->{$_} =~ s/\s+$//; }
 
 	my $bk = {
 		'ean13'		    => $data->{isbn13},
@@ -178,6 +184,7 @@ sub search {
 }
 
 1;
+
 __END__
 
 =head1 REQUIRES
@@ -203,7 +210,7 @@ RT system (http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-Goo
 However, it would help greatly if you are able to pinpoint problems or even
 supply a patch.
 
-Fixes are dependant upon their severity and my availablity. Should a fix not
+Fixes are dependent upon their severity and my availability. Should a fix not
 be forthcoming, please feel free to (politely) remind me.
 
 =head1 AUTHOR
@@ -213,7 +220,7 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010,2011 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2012 Barbie for Miss Barbell Productions
 
   This module is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
