@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 #--------------------------------------------------------------------------
 
@@ -129,10 +129,10 @@ sub search {
 #print STDERR "\n# " . Dumper($data);
 #print STDERR "\n# html=[$html]\n";
 
-    my ($publisher)                     = $html =~ m!<td class="metadata_label"><span[^>]*>Publisher</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!i;
+    my ($publisher)                     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Publisher(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
     ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher);
 
-    my ($isbns)                         = $html =~ m!<td class="metadata_label"><span[^>]*>ISBN</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!i;
+    my ($isbns)                         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
     my (@isbns)                         = split(qr/\s*,\s*/,$isbns);
     for my $value (@isbns) {
         $data->{isbn13} = $value    if(length $value == 13);
@@ -145,10 +145,10 @@ sub search {
 
     ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
     ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
-    ($data->{author})                   = $html =~ m!<td class="metadata_label">Author</td><td class="metadata_value">(.*?)</td>!i;
-    ($data->{title})                    = $html =~ m!<td class="metadata_label">Title</td><td class="metadata_value"><span dir=ltr>([^<]+)</span>!i;
+    ($data->{author})                   = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Author(?:</span>)?</td><td class="metadata_value">(.*?)</td>!i;
+    ($data->{title})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Title(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?!i;
     ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;
-    ($data->{pages})                    = $html =~ m!<td class="metadata_label"><span[^>]*>Length</span></td><td class="metadata_value"><span[^>]*>(\d+) pages</span></td>!s;
+    ($data->{pages})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) pages(?:</span>)?</td>!s;
     
     # remove HTML tags
     for(qw(author)) {

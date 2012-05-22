@@ -89,6 +89,7 @@ SKIP: {
             is($record->found_in,$DRIVER);
 
             my $book = $record->book;
+            diag("book=[".$book->{book_link}."]");
             for my $test (@{ $tests{$isbn} }) {
                 if($test->[0] eq 'ok')          { ok(       $book->{$test->[1]},             ".. '$test->[1]' found [$isbn]"); } 
                 elsif($test->[0] eq 'is')       { is(       $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 

@@ -17,15 +17,19 @@ To install this module type the following:
 
 DEPENDENCIES
 
-This module requires these other modules:
+This module requires these modules:
 
-  JSON
   WWW::Scraper::ISBN
   WWW::Scraper::ISBN::Record
   WWW::Scraper::ISBN::Driver
   WWW::Mechanize
 
-For optional testing the module would like these other modules:
+For testing the module requires these modules:
+
+  IO::File
+  Test::More
+
+For optional testing the module would like these modules:
 
   Test::Pod
   Test::Pod::Coverage

@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.08    22/05/2012
+	- further update to pattern matches.
+
 0.07    13/05/2012
 	- updated pattern matching due to page layout changes.
 	- spelling fixes. (thanks to Florian Schlichting & Gregor Herrmann).
