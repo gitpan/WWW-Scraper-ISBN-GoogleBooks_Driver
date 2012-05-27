@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 #--------------------------------------------------------------------------
 
@@ -36,12 +36,17 @@ use WWW::Mechanize;
 use JSON;
 
 ###########################################################################
-# Constants
+# Constants & Variables
 
 use constant	SEARCH	=> 'http://books.google.com/books?jscmd=viewapi&callback=bookdata&bibkeys=ISBN:';
 use constant	LB2G    => 453.59237;   # number of grams in a pound (lb)
 use constant	OZ2G    => 28.3495231;  # number of grams in an ounce (oz)
 use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
+
+my %LANG = (
+    'de' => { Publisher => 'Verlag',    Author => 'Autor',  Title => 'Titel', Length => 'Länge',  Pages => 'Seiten' },
+    'en' => { Publisher => 'Publisher', Author => 'Author', Title => 'Title', Length => 'Length', Pages => 'pages'  }
+);
 
 #--------------------------------------------------------------------------
 
@@ -52,7 +57,7 @@ use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 =over 4
 
-=item C<search()>
+=item C<search>
 
 Creates a query string, then passes the appropriate form fields to the 
 GoogleBooks server.
@@ -129,26 +134,9 @@ sub search {
 #print STDERR "\n# " . Dumper($data);
 #print STDERR "\n# html=[$html]\n";
 
-    my ($publisher)                     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Publisher(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
-    ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher);
-
-    my ($isbns)                         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
-    my (@isbns)                         = split(qr/\s*,\s*/,$isbns);
-    for my $value (@isbns) {
-        $data->{isbn13} = $value    if(length $value == 13);
-        $data->{isbn10} = $value    if(length $value == 10);
-    }
-
-#use Data::Dumper;
-#print STDERR "\n# isbns=[$isbns]";
-#print STDERR "\n# " . Dumper($data);
-
-    ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
-    ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front Cover" title="Front Cover"[^>]+></div>!i;
-    ($data->{author})                   = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Author(?:</span>)?</td><td class="metadata_value">(.*?)</td>!i;
-    ($data->{title})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Title(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?!i;
-    ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;
-    ($data->{pages})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?Length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) pages(?:</span>)?</td>!s;
+    my $lang = 'en';
+    $lang = 'de'    if($data->{url} =~ m{^http://\w+\.google\.de});
+    _match( $html, $data, $lang );
     
     # remove HTML tags
     for(qw(author)) {
@@ -181,6 +169,43 @@ sub search {
     $self->book($bk);
 	$self->found(1);
 	return $self->book;
+}
+
+=head2 Private Methods
+
+=over 4
+
+=item C<_match>
+
+Pattern matches for book page.
+
+=back
+
+=cut
+
+sub _match {
+    my ($html, $data, $lang) = @_;
+
+    my ($publisher)                     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Publisher}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
+    ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher);
+
+    my ($isbns)                         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
+    my (@isbns)                         = split(qr/\s*,\s*/,$isbns);
+    for my $value (@isbns) {
+        $data->{isbn13} = $value    if(length $value == 13);
+        $data->{isbn10} = $value    if(length $value == 10);
+    }
+
+#use Data::Dumper;
+#print STDERR "\n# isbns=[$isbns]";
+#print STDERR "\n# " . Dumper($data);
+
+    ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front\s*Cover" title="Front\s*Cover"[^>]+></div>!i;
+    ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front\s*Cover" title="Front\s*Cover"[^>]+></div>!i;
+    ($data->{author})                   = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Author}(?:</span>)?</td><td class="metadata_value">(.*?)</td>!i;
+    ($data->{title})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Title}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?!i;
+    ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;
+    ($data->{pages})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Length}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) $LANG{$lang}->{Pages}(?:</span>)?</td>!s;
 }
 
 1;

@@ -1,6 +1,6 @@
 {
     "name": "WWW-Scraper-ISBN-GoogleBooks_Driver",
-    "version": "0.08",
+    "version": "0.09",
     "abstract": "Search driver for Google Books online book catalog",
     "author": ["Barbie <barbie@cpan.org>"],
 
@@ -45,7 +45,7 @@
     "provides": {
         "WWW::Scraper::ISBN::GoogleBooks_Driver": {
             "file": "lib/WWW/Scraper/ISBN/GoogleBooks_Driver.pm",
-            "version": "0.08"
+            "version": "0.09"
         }
     },
     "no_index": {

@@ -21,10 +21,10 @@ my %tests = (
         [ 'is',     'publisher',    'Faber'             ],
         [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        '309'               ],
-        [ 'like',   'image_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
-        [ 'like',   'thumb_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
-        [ 'like',   'description',  qr|Learn how the big bang may have been spawned|    ],
-        [ 'like',   'book_link',    qr|books.google.[\w.]+/books\?id=\w+|               ]
+        [ 'like',   'image_link',   qr!bks\d+.books.google.[\w.]+/books\?id=\w+!        ],
+        [ 'like',   'thumb_link',   qr!bks\d+.books.google.[\w.]+/books\?id=\w+!        ],
+        [ 'like',   'description',  qr!Learn how the big bang may have been spawned!    ],
+        [ 'like',   'book_link',    qr!books.google.[\w.]+/books\?id=\w+!               ]
     ],
     '9780571239566' => [
         [ 'is',     'isbn',         '9780571239566'     ],
@@ -33,13 +33,13 @@ my %tests = (
         [ 'is',     'ean13',        '9780571239566'     ],
         [ 'is',     'title',        'Touching from a Distance: Ian Curtis and Joy Division'  ],
         [ 'is',     'author',       'Deborah Curtis'    ],
-        [ 'like',   'publisher',    qr|Faber \S+ Faber| ],
+        [ 'like',   'publisher',    qr!(Macmillan|Faber \S+ Faber)! ],
         [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        240                 ],
-        [ 'like',   'image_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
-        [ 'like',   'thumb_link',   qr|bks\d+.books.google.[\w.]+/books\?id=\w+|        ],
-        [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
-        [ 'like',   'book_link',    qr|books.google.[\w.]+/books\?id=\w+|               ]
+        [ 'like',   'image_link',   qr!bks\d+.books.google.[\w.]+/books\?id=\w+!        ],
+        [ 'like',   'thumb_link',   qr!bks\d+.books.google.[\w.]+/books\?id=\w+!        ],
+        [ 'like',   'description',  qr!Ian Curtis left behind a legacy rich in artistic genius! ],
+        [ 'like',   'book_link',    qr!books.google.[\w.]+/books\?id=\w+!               ]
     ],
 );
 

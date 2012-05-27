@@ -1,5 +1,13 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.09    27/05/2012
+	- GoogleBooks redirects to local sites, which do not necessarily have
+	  the same data for testing, or the same words for pattern matching.
+	  As such, language specific patterns are now included (de & en).
+	  If this distro does not work within your country, please let me know
+	  the test results, and I'll try and adapt the code. Patches are also 
+	  welcome too ;)
+
 0.08    22/05/2012
 	- further update to pattern matches.
 
