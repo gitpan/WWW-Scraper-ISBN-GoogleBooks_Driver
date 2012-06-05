@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.09';
+$VERSION = '0.10';
 
 #--------------------------------------------------------------------------
 
@@ -147,6 +147,14 @@ sub search {
 	# trim top and tail
 	for(keys %$data) { next unless(defined $data->{$_});$data->{$_} =~ s/^\s+//;$data->{$_} =~ s/\s+$//; }
 
+    # .com (and possibly others) don't always use Google's own CDN
+    if($data->{image} =~ m!^/!) {
+        my $domain = $mech->uri();
+        $domain = s!^(http://[^/]+).*$!$1!;
+        $data->{image} = $domain . $data->{image};
+        $data->{thumb} = $data->{image};
+    }
+
 	my $bk = {
 		'ean13'		    => $data->{isbn13},
 		'isbn13'		=> $data->{isbn13},
@@ -200,8 +208,8 @@ sub _match {
 #print STDERR "\n# isbns=[$isbns]";
 #print STDERR "\n# " . Dumper($data);
 
-    ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front\s*Cover" title="Front\s*Cover"[^>]+></div>!i;
-    ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)" alt="Front\s*Cover" title="Front\s*Cover"[^>]+></div>!i;
+    ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></div>!i;
+    ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></div>!i;
     ($data->{author})                   = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Author}(?:</span>)?</td><td class="metadata_value">(.*?)</td>!i;
     ($data->{title})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Title}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?!i;
     ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;

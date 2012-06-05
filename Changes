@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.10    05/06/2012
+	- .com (and possibly others) don't always use Google's own CDN.
+
 0.09    27/05/2012
 	- GoogleBooks redirects to local sites, which do not necessarily have
 	  the same data for testing, or the same words for pattern matching.
