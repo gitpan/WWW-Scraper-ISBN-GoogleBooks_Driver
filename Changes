@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.11    10/06/2012
+	- added debugging to understand differences between other local sites.
+
 0.10    05/06/2012
 	- .com (and possibly others) don't always use Google's own CDN.
 

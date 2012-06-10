@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 #--------------------------------------------------------------------------
 
@@ -169,6 +169,7 @@ sub search {
 		'publisher'		=> $data->{publisher},
 		'description'   => $data->{description},
 		'pages'		    => $data->{pages},
+        'html'          => $html
 	};
 
 #use Data::Dumper;
