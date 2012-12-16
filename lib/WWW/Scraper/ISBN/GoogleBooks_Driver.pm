@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 #--------------------------------------------------------------------------
 
@@ -134,6 +134,7 @@ sub search {
 #print STDERR "\n# " . Dumper($data);
 #print STDERR "\n# html=[$html]\n";
 
+    $data->{url} = $mech->uri();
     my $lang = 'en';
     $lang = 'de'    if($data->{url} =~ m{^http://\w+\.google\.de});
     _match( $html, $data, $lang );

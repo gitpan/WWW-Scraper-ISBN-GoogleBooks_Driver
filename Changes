@@ -1,47 +1,53 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
-0.11    10/06/2012
-	- added debugging to understand differences between other local sites.
+0.12    2012-12-16
+        - updated link for checking language.
+        - description update, failing test fixed.
+        - change file dates changed to meet W3CDTF standards.
+        - updated test suite.
 
-0.10    05/06/2012
-	- .com (and possibly others) don't always use Google's own CDN.
+0.11    2012-06-10
+        - added debugging to understand differences between other local sites.
 
-0.09    27/05/2012
-	- GoogleBooks redirects to local sites, which do not necessarily have
-	  the same data for testing, or the same words for pattern matching.
-	  As such, language specific patterns are now included (de & en).
-	  If this distro does not work within your country, please let me know
-	  the test results, and I'll try and adapt the code. Patches are also 
-	  welcome too ;)
+0.10    2012-06-05
+        - .com (and possibly others) don't always use Google's own CDN.
 
-0.08    22/05/2012
-	- further update to pattern matches.
+0.09    2012-05-27
+        - GoogleBooks redirects to local sites, which do not necessarily have
+          the same data for testing, or the same words for pattern matching.
+          As such, language specific patterns are now included (de & en).
+          If this distro does not work within your country, please let me know
+          the test results, and I'll try and adapt the code. Patches are also 
+          welcome too ;)
 
-0.07    13/05/2012
-	- updated pattern matching due to page layout changes.
-	- spelling fixes. (thanks to Florian Schlichting & Gregor Herrmann).
-	- META tests no longer require specific versions.
-	- added minimum perl version (5.006).
+0.08    2012-05-22
+        - further update to pattern matches.
+
+0.07    2012-05-13
+        - updated pattern matching due to page layout changes.
+        - spelling fixes. (thanks to Florian Schlichting & Gregor Herrmann).
+        - META tests no longer require specific versions.
+        - added minimum perl version (5.006).
         - reworked Makefile.PL for clarity.
 
-0.06    06/05/2011
+0.06    2011-05-06
         - revised link tests to use regexes.
 
-0.05    04/05/2011
+0.05    2011-05-04
         - upgraded to Test::CPAN::Meta::JSON for tests.
         - Google now produces broken XHTML :(
 
-0.04    09/12/2010
+0.04    2010-12-09
         - amended pingtest() in network tests.
         - added further skip test if test books are withdrawn from the site.
         - updated published date in tests.
 
-0.03    06/10/2010
+0.03    2010-10-06
         - fixed skip count.
         - provided alternate ping test methods.
 
-0.02    15/09/2010
+0.02    2010-09-15
         - reworked test structure, so easier to add sample sets.
 
-0.01	06/09/2010
+0.01    2010-09-06
         - initial release

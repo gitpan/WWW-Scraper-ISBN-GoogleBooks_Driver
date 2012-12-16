@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-use lib './t';
 use Test::More tests => 32;
 use WWW::Scraper::ISBN;
 use Data::Dumper;
@@ -17,7 +16,7 @@ my %tests = (
         [ 'is',     'isbn10',       '057122055X'        ],
         [ 'is',     'isbn13',       '9780571220557'     ],
         [ 'is',     'ean13',        '9780571220557'     ],
-        [ 'is',     'title',        'The Never-Ending Days of Being Dead: Dispatches from the Frontline of Science' ],
+        [ 'is',     'title',        'The Never-Ending Days of Being Dead: Dispatches from the Front Line of Science' ],
         [ 'is',     'author',       'Marcus Chown'      ],
         [ 'is',     'publisher',    'Faber'             ],
         [ 'is',     'pubdate',      '2007'              ],
