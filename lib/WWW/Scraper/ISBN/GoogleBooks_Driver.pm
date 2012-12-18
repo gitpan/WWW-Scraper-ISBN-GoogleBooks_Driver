@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 #--------------------------------------------------------------------------
 
@@ -45,7 +45,8 @@ use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 my %LANG = (
     'de' => { Publisher => 'Verlag',    Author => 'Autor',  Title => 'Titel', Length => 'Länge',  Pages => 'Seiten' },
-    'en' => { Publisher => 'Publisher', Author => 'Author', Title => 'Title', Length => 'Length', Pages => 'pages'  }
+    'en' => { Publisher => 'Publisher', Author => 'Author', Title => 'Title', Length => 'Length', Pages => 'pages'  },
+    'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}', Author => 'Author', Title => 'Title', Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
 );
 
 #--------------------------------------------------------------------------
@@ -137,6 +138,11 @@ sub search {
     $data->{url} = $mech->uri();
     my $lang = 'en';
     $lang = 'de'    if($data->{url} =~ m{^http://\w+\.google\.de});
+    $lang = 'iw'    if($data->{url} =~ m{^http://\w+\.google\.co\.il}); # Hebrew
+
+	return $self->handler("Language '".uc $lang."'not currently supported, patches welcome.")
+		if($lang =~ m!xx!);
+    
     _match( $html, $data, $lang );
     
     # remove HTML tags
@@ -196,8 +202,9 @@ Pattern matches for book page.
 sub _match {
     my ($html, $data, $lang) = @_;
 
-    my ($publisher)                     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Publisher}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
-    ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher);
+    my ($publisher)                     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Publisher}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!si;
+    ($publisher)                        = $html =~ m!<td class="metadata_label"><span[^>]*>\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!si    unless($publisher);
+    ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher) if($publisher);
 
     my ($isbns)                         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
     my (@isbns)                         = split(qr/\s*,\s*/,$isbns);
@@ -211,11 +218,17 @@ sub _match {
 #print STDERR "\n# " . Dumper($data);
 
     ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></div>!i;
-    ($data->{thumb})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></div>!i;
+    ($data->{image})                    = $html =~ m!<div class="bookcover"><a[^>]+><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></a></div>!i  unless($data->{image});
     ($data->{author})                   = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Author}(?:</span>)?</td><td class="metadata_value">(.*?)</td>!i;
+    ($data->{author})                   = $html =~ m!<td class="metadata_value"><a class="primary" href=".*?"><span dir=ltr>([^<]+)</span></a></td>!si    unless($data->{author});
     ($data->{title})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Title}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?!i;
-    ($data->{description})              = $html =~ m!<meta name="description" content="([^"]+)" */>!si;
+    ($data->{title})                    = $html =~ m!<meta name="title" content="([^>]+)"\s*/>! unless($data->{title});
+    ($data->{description})              = $html =~ m!<meta name="description" content="([^>]+)"\s*/>!si;
     ($data->{pages})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Length}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) $LANG{$lang}->{Pages}(?:</span>)?</td>!s;
+    ($data->{pages})                    = $html =~ m!<td class="metadata_value"><span[^>]*>(\d+) \\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}</span></td>!si   unless($data->{pages});
+
+    $data->{author} =~ s/"//g;    
+    $data->{thumb} = $data->{image};
 }
 
 1;

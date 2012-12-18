@@ -64,44 +64,48 @@ SKIP: {
     eval { $record = $scraper->search($isbn); };
     if($@) {
         like($@,qr/Invalid ISBN specified/);
-    }
-    elsif($record->found) {
+    } elsif($record->found) {
         ok(0,'Unexpectedly found a non-existent book');
     } else {
-        like($record->error,qr/Failed to find that book on|website appears to be unavailable/);
+        like($record->error,qr/Failed to find that book on|website appears to be unavailable|Language.*?not currently supported/);
     }
 
-    for my $isbn (keys %tests) {
-        $record = $scraper->search($isbn);
-        my $error  = $record->error || '';
+    SKIP: {
+        skip "Language not supported", $tests-2
+            if($record->error =~ /Language.*?not currently supported/);
 
-        SKIP: {
-            skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
-                if($error =~ /website appears to be unavailable/);
-            skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
-                if($error =~ /Failed to find that book/ || !$record->found);
+        for my $isbn (keys %tests) {
+            $record = $scraper->search($isbn);
+            my $error  = $record->error || '';
 
-            unless($record->found) {
-                diag($record->error);
+            SKIP: {
+                skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
+                    if($error =~ /website appears to be unavailable/);
+                skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
+                    if($error =~ /Failed to find that book/ || !$record->found);
+
+                unless($record->found) {
+                    diag($record->error);
+                }
+
+                is($record->found,1);
+                is($record->found_in,$DRIVER);
+
+                my $fail = 0;
+                my $book = $record->book;
+                diag("book=[".$book->{book_link}."]");
+                for my $test (@{ $tests{$isbn} }) {
+                    if($test->[0] eq 'ok')          { ok(       $book->{$test->[1]},             ".. '$test->[1]' found [$isbn]"); } 
+                    elsif($test->[0] eq 'is')       { is(       $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
+                    elsif($test->[0] eq 'isnt')     { isnt(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
+                    elsif($test->[0] eq 'like')     { like(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
+                    elsif($test->[0] eq 'unlike')   { unlike(   $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); }
+
+                    $fail = 1   unless(defined $book->{$test->[1]} || ($test->[0] ne 'ok' && !defined $test->[2]));
+                }
+
+                diag("book=[".Dumper($book)."]")    if($fail);
             }
-
-            is($record->found,1);
-            is($record->found_in,$DRIVER);
-
-            my $fail = 0;
-            my $book = $record->book;
-            diag("book=[".$book->{book_link}."]");
-            for my $test (@{ $tests{$isbn} }) {
-                if($test->[0] eq 'ok')          { ok(       $book->{$test->[1]},             ".. '$test->[1]' found [$isbn]"); } 
-                elsif($test->[0] eq 'is')       { is(       $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
-                elsif($test->[0] eq 'isnt')     { isnt(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
-                elsif($test->[0] eq 'like')     { like(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
-                elsif($test->[0] eq 'unlike')   { unlike(   $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); }
-
-                $fail = 1   unless(defined $book->{$test->[1]} || ($test->[0] ne 'ok' && !defined $test->[2]));
-            }
-
-            diag("book=[".Dumper($book)."]")    if($fail);
         }
     }
 }

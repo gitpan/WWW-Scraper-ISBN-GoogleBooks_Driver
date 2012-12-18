@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.13    2012-12-18
+        - added Language not supported error.
+        - added support for Hebrew pages.
+
 0.12    2012-12-16
         - updated link for checking language.
         - description update, failing test fixed.
