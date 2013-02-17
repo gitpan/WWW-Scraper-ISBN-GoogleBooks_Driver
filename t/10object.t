@@ -16,7 +16,7 @@ my %tests = (
         [ 'is',     'isbn10',       '057122055X'        ],
         [ 'is',     'isbn13',       '9780571220557'     ],
         [ 'is',     'ean13',        '9780571220557'     ],
-        [ 'is',     'title',        'The Never-Ending Days of Being Dead: Dispatches from the Front Line of Science' ],
+        [ 'like',   'title',        qr!The Never-Ending Days of Being Dead! ],
         [ 'is',     'author',       'Marcus Chown'      ],
         [ 'is',     'publisher',    'Faber'             ],
         [ 'is',     'pubdate',      '2007'              ],
@@ -31,7 +31,7 @@ my %tests = (
         [ 'is',     'isbn10',       '0571239560'        ],
         [ 'is',     'isbn13',       '9780571239566'     ],
         [ 'is',     'ean13',        '9780571239566'     ],
-        [ 'is',     'title',        'Touching from a Distance: Ian Curtis and Joy Division'     ],
+        [ 'like',   'title',        qr!Touching from a Distance!    ],
         [ 'is',     'author',       'Deborah Curtis'    ],
         [ 'like',   'publisher',    qr!(Macmillan|Faber \S+ Faber)! ],
         [ 'is',     'pubdate',      '2007'              ],
@@ -72,13 +72,15 @@ SKIP: {
 
     SKIP: {
         skip "Language not supported", $tests-2
-            if($record->error =~ /Language.*?not currently supported/);
+            if($record && $record->error =~ /Language.*?not currently supported/);
 
         for my $isbn (keys %tests) {
             $record = $scraper->search($isbn);
             my $error  = $record->error || '';
 
             SKIP: {
+                skip "Language not supported", scalar(@{ $tests{$isbn} }) + 2   
+                    if($error =~ /Language.*?not currently supported/);
                 skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
                     if($error =~ /website appears to be unavailable/);
                 skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   

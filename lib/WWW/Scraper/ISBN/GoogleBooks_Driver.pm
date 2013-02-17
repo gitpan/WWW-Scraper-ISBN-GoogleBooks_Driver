@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 #--------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ use constant	OZ2G    => 28.3495231;  # number of grams in an ounce (oz)
 use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 my %LANG = (
-    'de' => { Publisher => 'Verlag',    Author => 'Autor',  Title => 'Titel', Length => 'Länge',  Pages => 'Seiten' },
+    'de' => { Publisher => 'Verlag',    Author => 'Autor',  Title => 'Titel', Length => qr{L.+nge},  Pages => 'Seiten' },
     'en' => { Publisher => 'Publisher', Author => 'Author', Title => 'Title', Length => 'Length', Pages => 'pages'  },
     'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}', Author => 'Author', Title => 'Title', Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
 );
@@ -137,7 +137,7 @@ sub search {
 
     $data->{url} = $mech->uri();
     my $lang = 'en';
-    $lang = 'de'    if($data->{url} =~ m{^http://\w+\.google\.de});
+    $lang = 'de'    if($data->{url} =~ m{^http://\w+\.google\.(de|ch)});
     $lang = 'iw'    if($data->{url} =~ m{^http://\w+\.google\.co\.il}); # Hebrew
 
 	return $self->handler("Language '".uc $lang."'not currently supported, patches welcome.")
@@ -268,9 +268,9 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010-2012 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
 
-  This module is free software; you can redistribute it and/or
+  This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
 
 =cut
