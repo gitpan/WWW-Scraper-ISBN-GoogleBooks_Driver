@@ -31,10 +31,10 @@ For testing the module requires these modules:
 
 For optional testing the module would like these modules:
 
-  Test::Pod
-  Test::Pod::Coverage
   Test::CPAN::Meta
   Test::CPAN::Meta::JSON
+  Test::Pod
+  Test::Pod::Coverage
 
 COPYRIGHT AND LICENSE
 

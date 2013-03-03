@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.15    2013-03-03
+        - added support for French pages.
+
 0.14    2013-02-17
         - 'Language not currently supported' handled better.
         - default lanmguage for .ch is German.
