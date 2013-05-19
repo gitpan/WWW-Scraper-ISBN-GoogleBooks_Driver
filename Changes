@@ -1,5 +1,10 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.16    2013-05-19
+        - added isbn-check.pl to examples.
+        - META updates.
+        - updated publisher & pubdate patterns due to website changes.
+
 0.15    2013-03-03
         - added support for French pages.
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.15';
+$VERSION = '0.16';
 
 #--------------------------------------------------------------------------
 
@@ -204,12 +204,14 @@ Pattern matches for book page.
 sub _match {
     my ($html, $data, $lang) = @_;
 
-    my ($publisher)                     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Publisher}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!si;
-    ($publisher)                        = $html =~ m!<td class="metadata_label"><span[^>]*>\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!si    unless($publisher);
-    ($data->{publisher},$data->{pubdate})   = split(qr/\s*,\s*/,$publisher) if($publisher);
+    my ($publisher)     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Publisher}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!si;
+    ($publisher)        = $html =~ m!<td class="metadata_label"><span[^>]*>\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!si    unless($publisher);
+    my @publist         = split(qr/\s*,\s*/,$publisher) if($publisher);
+    $data->{publisher}  = $publist[0];
+    $data->{pubdate}    = $publist[-1];
 
-    my ($isbns)                         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
-    my (@isbns)                         = split(qr/\s*,\s*/,$isbns);
+    my ($isbns)         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
+    my (@isbns)         = split(qr/\s*,\s*/,$isbns);
     for my $value (@isbns) {
         $data->{isbn13} = $value    if(length $value == 13);
         $data->{isbn10} = $value    if(length $value == 10);

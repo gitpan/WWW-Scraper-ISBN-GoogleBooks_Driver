@@ -18,7 +18,7 @@ my %tests = (
         [ 'is',     'ean13',        '9780571220557'     ],
         [ 'like',   'title',        qr!The Never-Ending Days of Being Dead! ],
         [ 'is',     'author',       'Marcus Chown'      ],
-        [ 'is',     'publisher',    'Faber'             ],
+        [ 'like',   'publisher',    qr|Faber|           ],
         [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        '309'               ],
         [ 'like',   'image_link',   qr!(bks\d+.books.google.[\w.]+/books\?id=\w+|browse.php)!   ],
@@ -123,7 +123,7 @@ sub pingtest {
 
     eval { system($cmd) }; 
     if($@) {                # can't find ping, or wrong arguments?
-        diag();
+        diag($@);
         return 1;
     }
 
