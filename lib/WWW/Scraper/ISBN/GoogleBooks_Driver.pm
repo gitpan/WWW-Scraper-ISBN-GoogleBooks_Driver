@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 #--------------------------------------------------------------------------
 
@@ -44,10 +44,15 @@ use constant	OZ2G    => 28.3495231;  # number of grams in an ounce (oz)
 use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 my %LANG = (
-    'de' => { Publisher => 'Verlag',        Author => 'Autor',      Title => 'Titel', Length => qr{L.+nge}, Pages => 'Seiten' },
-    'en' => { Publisher => 'Publisher',     Author => 'Author',     Title => 'Title', Length => 'Length',   Pages => 'pages'  },
-    'fr' => { Publisher => '.+diteur',      Author => 'Auteur',     Title => 'Titre', Length => 'Longueur', Pages => 'pages' },
-    'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}', Author => 'Author', Title => 'Title', Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
+    'de' => { Publisher => 'Verlag',      Author => 'Autor',       Title => 'Titel',   Length => qr{L.+nge}, Pages => 'Seiten' },
+    'en' => { Publisher => 'Publisher',   Author => 'Author',      Title => 'Title',   Length => 'Length',   Pages => 'pages'  },
+    'fr' => { Publisher => '.+diteur',    Author => 'Auteur',      Title => 'Titre',   Length => 'Longueur', Pages => 'pages'  },
+    'fi' => { Publisher => 'Kustantaja',  Author => 'Kirjoittaja', Title => 'Otsikko', Length => 'Pituus',   Pages => 'sivua'  },
+    'nl' => { Publisher => 'Uitgever',    Author => 'Auteur',      Title => 'Titel',   Length => 'Lengte',   Pages => q[pagina's]  },
+
+    'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}', 
+                                          Author => 'Author',      Title => 'Title',   Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', 
+                                                                                                             Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
 );
 
 #--------------------------------------------------------------------------
@@ -137,10 +142,12 @@ sub search {
 #print STDERR "\n# html=[$html]\n";
 
     $data->{url} = $mech->uri();
-    my $lang = 'en';
-    $lang = 'de'    if($data->{url} =~ m{^http://[.\w]+\.google\.(de|ch)\b});
-    $lang = 'iw'    if($data->{url} =~ m{^http://[.\w]+\.google\.co\.il\b}); # Hebrew
-    $lang = 'fr'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fr)\b});
+    my $lang = 'en';                                                            # English (default)
+    $lang = 'de'    if($data->{url} =~ m{^http://[.\w]+\.google\.(de|ch)\b});   # German
+    $lang = 'iw'    if($data->{url} =~ m{^http://[.\w]+\.google\.co\.il\b});    # Hebrew
+    $lang = 'fr'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fr)\b});      # French
+    $lang = 'fi'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fi)\b});      # Finnish
+    $lang = 'nl'    if($data->{url} =~ m{^http://[.\w]+\.google\.(nl)\b});      # Dutch
 
 	return $self->handler("Language '".uc $lang."'not currently supported, patches welcome.")
 		if($lang =~ m!xx!);
