@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 #--------------------------------------------------------------------------
 
@@ -142,12 +142,12 @@ sub search {
 #print STDERR "\n# html=[$html]\n";
 
     $data->{url} = $mech->uri();
-    my $lang = 'en';                                                            # English (default)
-    $lang = 'de'    if($data->{url} =~ m{^http://[.\w]+\.google\.(de|ch)\b});   # German
-    $lang = 'iw'    if($data->{url} =~ m{^http://[.\w]+\.google\.co\.il\b});    # Hebrew
-    $lang = 'fr'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fr)\b});      # French
-    $lang = 'fi'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fi)\b});      # Finnish
-    $lang = 'nl'    if($data->{url} =~ m{^http://[.\w]+\.google\.(nl)\b});      # Dutch
+    my $lang = 'en';                                                                # English (default)
+    $lang = 'de'    if($data->{url} =~ m{^http://[.\w]+\.google\.(de|ch|at)\b});    # German
+    $lang = 'iw'    if($data->{url} =~ m{^http://[.\w]+\.google\.co\.il\b});        # Hebrew
+    $lang = 'fr'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fr)\b});          # French
+    $lang = 'fi'    if($data->{url} =~ m{^http://[.\w]+\.google\.(fi)\b});          # Finnish
+    $lang = 'nl'    if($data->{url} =~ m{^http://[.\w]+\.google\.(nl)\b});          # Dutch
 
 	return $self->handler("Language '".uc $lang."'not currently supported, patches welcome.")
 		if($lang =~ m!xx!);

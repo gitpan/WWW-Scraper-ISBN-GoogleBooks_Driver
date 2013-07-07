@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-GoogleBooks_Driver.
 
+0.18    2013-07-07
+        - added support for Austrian pages.
+
 0.17    2013-06-23
         - added support for Finnish & Dutch pages.
 
