@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 #--------------------------------------------------------------------------
 
@@ -49,6 +49,7 @@ my %LANG = (
     'fr' => { Publisher => '.+diteur',    Author => 'Auteur',      Title => 'Titre',   Length => 'Longueur', Pages => 'pages'  },
     'fi' => { Publisher => 'Kustantaja',  Author => 'Kirjoittaja', Title => 'Otsikko', Length => 'Pituus',   Pages => 'sivua'  },
     'nl' => { Publisher => 'Uitgever',    Author => 'Auteur',      Title => 'Titel',   Length => 'Lengte',   Pages => q[pagina's]  },
+    'md' => { Publisher => 'Uitgever',    Author => 'Auteur',      Title => 'Titel',   Length => 'Lengte',   Pages => q[pagina's]  },
 
     'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}', 
                                           Author => 'Author',      Title => 'Title',   Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', 
@@ -279,7 +280,7 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2014 Barbie for Miss Barbell Productions
 
   This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.

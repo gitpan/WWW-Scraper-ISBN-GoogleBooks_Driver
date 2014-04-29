@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                   WWW-Scraper-ISBN-GoogleBooks_Driver
-version:                0.18
+version:                0.19
 abstract:               Search driver for Google Books online book catalog
 author:
   - Barbie <barbie@cpan.org>
@@ -29,7 +29,7 @@ build_requires:
 provides:
   WWW::Scraper::ISBN::GoogleBooks_Driver:
     file:     lib/WWW/Scraper/ISBN/GoogleBooks_Driver.pm
-    version:  0.18
+    version:  0.19
 no_index:
   directory:
     - t
@@ -38,6 +38,7 @@ no_index:
 resources:
   license:    http://www.perlfoundation.org/artistic_license_2_0
   bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-GoogleBooks_Driver
+  repository: http://github.com/barbie/www-scraper-isbn-googlebooks_driver
 
 meta-spec:
    version:   1.4
