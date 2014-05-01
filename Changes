@@ -1,6 +1,9 @@
 Revision history for WWW-Scraper-ISBN-GoogleBooks_Driver
 ========================================================
 
+0.20    2014-05-01
+        - added support for Russian pages.
+
 0.19    2014-04-29
         - added git repository links to metadata.
         - added support for Moldovian pages.
