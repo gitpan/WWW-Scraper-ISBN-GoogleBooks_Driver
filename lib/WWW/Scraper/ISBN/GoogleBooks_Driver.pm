@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.20';
+$VERSION = '0.21';
 
 #--------------------------------------------------------------------------
 
@@ -44,20 +44,18 @@ use constant	OZ2G    => 28.3495231;  # number of grams in an ounce (oz)
 use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 my %LANG = (
-    'de' => { Publisher => 'Verlag',      Author => 'Autor',        Title => 'Titel',   Length => qr{L.+nge},   Pages => 'Seiten' },
-    'en' => { Publisher => 'Publisher',   Author => 'Author',       Title => 'Title',   Length => 'Length',     Pages => 'pages'  },
-    'fr' => { Publisher => '.+diteur',    Author => 'Auteur',       Title => 'Titre',   Length => 'Longueur',   Pages => 'pages'  },
-    'fi' => { Publisher => 'Kustantaja',  Author => 'Kirjoittaja',  Title => 'Otsikko', Length => 'Pituus',     Pages => 'sivua'  },
-    'nl' => { Publisher => 'Uitgever',    Author => 'Auteur',       Title => 'Titel',   Length => 'Lengte',     Pages => q[pagina's]  },
-    'md' => { Publisher => 'Uitgever',    Author => 'Auteur',       Title => 'Titel',   Length => 'Lengte',     Pages => q[pagina's]  },
-    'ru' => { Publisher => '\\\x\{418\}\\\x\{437\}\\\x\{434\}\\\x\{430\}\\\x\{442\}\\\x\{435\}\\\x\{43b\}\\\x\{44c\}',    
-                                          Author => '\\\x\{410\}\\\x\{432\}\\\x\{442\}\\\x\{43e\}\\\x\{440\}',      
-                                                                    Title => '\\\x\{41d\}\\\x\{430\}\\\x\{437\}\\\x\{432\}\\\x\{430\}\\\x\{43d\}\\\x\{438\}\\\x\{435\}',   
-                                                                                        Length => '\\\x\{41a\}\\\x\{43e\}\\\x\{43b\}\\\x\{438\}\\\x\{447\}\\\x\{435\}\\\x\{441\}\\\x\{442\}\\\x\{432\}\\\x\{43e\} \\\x\{441\}\\\x\{442\}\\\x\{440\}\\\x\{430\}\\\x\{43d\}\\\x\{438\}\\\x\{446\}',   
-                                                                                                                Pages => '\\\x\{412\}\\\x\{441\}\\\x\{435\}\\\x\{433\}\\\x\{43e\} \\\x\{441\}\\\x\{442\}\\\x\{440\}\\\x\{430\}\\\x\{43d\}\\\x\{438\}\\\x\{446\}\:'  },
+    'de' => { Publisher => 'Verlag',        Author => 'Autor',          Title => 'Titel',   Length => qr{L.+nge},   Pages => 'Seiten' },
+    'en' => { Publisher => 'Publisher',     Author => 'Author',         Title => 'Title',   Length => 'Length',     Pages => 'pages'  },
+    'fr' => { Publisher => '.+diteur',      Author => 'Auteur',         Title => 'Titre',   Length => 'Longueur',   Pages => 'pages'  },
+    'fi' => { Publisher => 'Kustantaja',    Author => 'Kirjoittaja',    Title => 'Otsikko', Length => 'Pituus',     Pages => 'sivua'  },
+    'nl' => { Publisher => 'Uitgever',      Author => 'Auteur',         Title => 'Titel',   Length => 'Lengte',     Pages => q[pagina's]  },
+    'md' => { Publisher => 'Editor',        Author => 'Autor',          Title => 'Titlu',   Length => 'Lungime',    Pages => 'pagini'  },
+    'ru' => { Publisher => 'Издатель',      Author => 'Автор',          Title => 'Название',    
+                                                                                            Length => 'Количество страниц',     
+                                                                                                                    Pages => 'Всего страниц:'  },
     'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}', 
-                                          Author => 'Author',       Title => 'Title',   Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', 
-                                                                                                                Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
+                                            Author => 'Author',         Title => 'Title',   Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}', 
+                                                                                                                    Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
 );
 
 #--------------------------------------------------------------------------
