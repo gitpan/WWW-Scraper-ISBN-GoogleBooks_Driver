@@ -1,6 +1,12 @@
 Revision history for WWW-Scraper-ISBN-GoogleBooks_Driver
 ========================================================
 
+0.22    2014-06-16
+        - fixed distribution name in META.
+        - upgrade to WWW-Scraper-ISBN-1.00.
+        - added ISBN validation checks.
+        - reworked test failure checks.
+
 0.21    2014-05-03
         - fixes for Moldovian and Russian pages, broken in last release.
 

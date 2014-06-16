@@ -2,7 +2,7 @@ WWW-Scraper-ISBN-GoogleBooks_Driver
 ===================================
 
 This module is a Perl extension for ISBN search collection that is provide by
-WWW::Scraper::ISBN.
+WWW-Scraper-ISBN.
 
 This driver searches for book information from the GoogleBooks online catalog.
 
@@ -19,6 +19,7 @@ DEPENDENCIES
 
 This module requires these modules:
 
+  JSON
   WWW::Scraper::ISBN
   WWW::Scraper::ISBN::Record
   WWW::Scraper::ISBN::Driver

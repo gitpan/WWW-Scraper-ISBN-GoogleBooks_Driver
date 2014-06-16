@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.21';
+$VERSION = '0.22';
 
 #--------------------------------------------------------------------------
 
@@ -102,10 +102,15 @@ sub search {
 	$self->found(0);
 	$self->book(undef);
 
+    # validate and convert into EAN13 format
+    my $ean = $self->convert_to_ean13($isbn);
+    return $self->handler("Invalid ISBN specified")   
+        unless($ean);
+
 	my $mech = WWW::Mechanize->new();
     $mech->agent_alias( 'Linux Mozilla' );
 
-    eval { $mech->get( SEARCH . $isbn ) };
+    eval { $mech->get( SEARCH . $ean ) };
     return $self->handler("GoogleBooks website appears to be unavailable.")
 	    if($@ || !$mech->success() || !$mech->content());
 
