@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.23';
+$VERSION = '0.24';
 
 #--------------------------------------------------------------------------
 
@@ -51,10 +51,10 @@ my %LANG = (
     'fi' => { Publisher => 'Kustantaja',    Author => 'Kirjoittaja',    Title => 'Otsikko', Length => 'Pituus',     Pages => 'sivua'  },
     'nl' => { Publisher => 'Uitgever',      Author => 'Auteur',         Title => 'Titel',   Length => 'Lengte',     Pages => q[pagina's]  },
     'md' => { Publisher => 'Editor',        Author => 'Autor',          Title => 'Titlu',   Length => 'Lungime',    Pages => 'pagini'  },
-    'ru' => { Publisher => 'Издатель|\\x\{418\}\\x\{437\}\\x\{434\}\\x\{430\}\\x\{442\}\\x\{435\}\\x\{43b\}\\x\{44c\}',
+    'ru' => { Publisher => ['Издатель', qr/\Q\x{418}\x{437}\x{434}\x{430}\x{442}\x{435}\x{43b}\x{44c}\E/ ],
                                             Author => 'Автор',          Title => 'Название',
-                                                                                            Length => 'Количество страниц|\\x\{41a\}\\x\{43e\}\\x\{43b\}\\x\{438\}\\x\{447\}\\x\{435\}\\x\{441\}\\x\{442\}\\x\{432\}\\x\{43e\} \\x\{441\}\\x\{442\}\\x\{440\}\\x\{430\}\\x\{43d\}\\x\{438\}\\x\{446\}',
-                                                                                                                    Pages => 'Всего страниц:|\\x\{412\}\\x\{441\}\\x\{435\}\\x\{433\}\\x\{43e\} \\x\{441\}\\x\{442\}\\x\{440\}\\x\{430\}\\x\{43d\}\\x\{438\}\\x\{446\}:'  },
+                                                                                            Length => [ 'Количество страниц', qr/\Q\x{41a}\x{43e}\x{43b}\x{438}\x{447}\x{435}\x{441}\x{442}\x{432}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}/ ],
+                                                                                                                    Pages => [ 'Всего страниц:', qr/\Q\x{412}\x{441}\x{435}\x{433}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}:/ ] },
     'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}',
                                             Author => 'Author',         Title => 'Title',   Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}',
                                                                                                                     Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
@@ -220,13 +220,34 @@ Pattern matches for book page.
 
 sub _match {
     my ($html, $data, $lang) = @_;
+    my ($publisher);
 
-    my ($publisher)     = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Publisher}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!si;
-    ($publisher)        = $html =~ m!<td class="metadata_label"><span[^>]*>\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}</span></td><td class="metadata_value"><span[^>]*>([^<]+)</span></td>!si    unless($publisher);
-    my @publist         = split(qr/\s*,\s*/,$publisher) if($publisher);
-    $data->{publisher}  = $publist[0];
-    $data->{pubdate}    = $publist[-1];
+    # Some pages can present publisher text in multiple styles
+    my @pubs = ref($LANG{$lang}->{Publisher}) eq 'ARRAY' ? @{$LANG{$lang}->{Publisher}} : ($LANG{$lang}->{Publisher});
+    for my $pub (@pubs) {
+        ($publisher) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$pub(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!si;
+        last if($publisher);
+    }
+    if($publisher) {
+        my @publist         = split(qr/\s*,\s*/,$publisher);
+        $data->{publisher}  = $publist[0];
+        $data->{pubdate}    = $publist[-1];
+    }
 
+    # Some pages can present length/pages text in multiple styles
+    my @lengths = ref($LANG{$lang}->{Length}) eq 'ARRAY' ? @{$LANG{$lang}->{Length}} : ($LANG{$lang}->{Length});
+    my @pages   = ref($LANG{$lang}->{Pages})  eq 'ARRAY' ? @{$LANG{$lang}->{Pages}}  : ($LANG{$lang}->{Pages});
+    for my $length (@lengths) {
+        for my $page (@pages) {
+            ($data->{pages}) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) $page(?:</span>)?</td>!s;
+            last    if($data->{pages});
+            ($data->{pages}) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?$page\s+(\d+)(?:</span>)?</td>!s;
+            last    if($data->{pages});
+        }
+        last    if($data->{pages});
+    }
+
+    # get ISBN styles
     my ($isbns)         = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?ISBN(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?</td>!i;
     my (@isbns)         = split(qr/\s*,\s*/,$isbns);
     for my $value (@isbns) {
@@ -238,6 +259,7 @@ sub _match {
 #print STDERR "\n# isbns=[$isbns]";
 #print STDERR "\n# " . Dumper($data);
 
+    # get other fields
     ($data->{image})                    = $html =~ m!<div class="bookcover"><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></div>!i;
     ($data->{image})                    = $html =~ m!<div class="bookcover"><a[^>]+><img src="([^"]+)"[^>]+id=summary-frontcover[^>]*></a></div>!i  unless($data->{image});
     ($data->{author})                   = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Author}(?:</span>)?</td><td class="metadata_value">(.*?)</td>!i;
@@ -245,9 +267,6 @@ sub _match {
     ($data->{title})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Title}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?([^<]+)(?:</span>)?!i;
     ($data->{title})                    = $html =~ m!<meta name="title" content="([^>]+)"\s*/>! unless($data->{title});
     ($data->{description})              = $html =~ m!<meta name="description" content="([^>]+)"\s*/>!si;
-    ($data->{pages})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Length}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) $LANG{$lang}->{Pages}(?:</span>)?</td>!s;
-    ($data->{pages})                    = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$LANG{$lang}->{Length}(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?$LANG{$lang}->{Pages}\s+(\d+)(?:</span>)?</td>!s  unless($data->{pages});
-    ($data->{pages})                    = $html =~ m!<td class="metadata_value"><span[^>]*>(\d+) \\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}</span></td>!si   unless($data->{pages});
 
     $data->{author} =~ s/"//g;
     $data->{thumb} = $data->{image};

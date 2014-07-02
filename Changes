@@ -1,6 +1,9 @@
 Revision history for WWW-Scraper-ISBN-GoogleBooks_Driver
 ========================================================
 
+0.24    2014-07-02
+        - changed pattern matching to allow lists of patterns.
+
 0.23    2014-06-19
         - added support for Czech Republic pages.
         - further patterns for Russian pages.
