@@ -1,6 +1,11 @@
 Revision history for WWW-Scraper-ISBN-GoogleBooks_Driver
 ========================================================
 
+0.25    2014-08-03
+        - rework of html entity encodings.
+        - re-engineered domain used to allow testing of different Google 
+          websites.
+
 0.24    2014-07-02
         - changed pattern matching to allow lists of patterns.
 

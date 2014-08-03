@@ -2,9 +2,10 @@ package WWW::Scraper::ISBN::GoogleBooks_Driver;
 
 use strict;
 use warnings;
+use utf8;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 #--------------------------------------------------------------------------
 
@@ -32,32 +33,36 @@ use base qw(WWW::Scraper::ISBN::Driver);
 ###########################################################################
 # Modules
 
-use WWW::Mechanize;
+use HTML::Entities;
 use JSON;
+use WWW::Mechanize;
 
 ###########################################################################
 # Constants & Variables
 
-use constant	SEARCH	=> 'http://books.google.com/books?jscmd=viewapi&callback=bookdata&bibkeys=ISBN:';
+my $DOMAIN = 'http://books.google.com';
+
+use constant	SEARCH	=> '/books?jscmd=viewapi&callback=bookdata&bibkeys=ISBN:';
 use constant	LB2G    => 453.59237;   # number of grams in a pound (lb)
 use constant	OZ2G    => 28.3495231;  # number of grams in an ounce (oz)
 use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 my %LANG = (
-    'cz' => { Publisher => 'Vydavatel',     Author => 'Autor',          Title => 'Titul',   Length => 'Délka',      Pages => 'Počet stran: ' },
+    'cz' => { Publisher => 'Vydavatel',     Author => 'Autor',          Title => 'Titul',   Length => [ 'Délka', qr/\QD\x{e9}lka\E/, 'D&eacute;lka' ],
+                                                                                                                    Pages => [ 'Počet stran:', qr/\QPo\x{10d}et stran:\E/, 'Po&#x10D;et stran:' ] },
     'de' => { Publisher => 'Verlag',        Author => 'Autor',          Title => 'Titel',   Length => qr{L.+nge},   Pages => 'Seiten' },
     'en' => { Publisher => 'Publisher',     Author => 'Author',         Title => 'Title',   Length => 'Length',     Pages => 'pages'  },
     'fr' => { Publisher => '.+diteur',      Author => 'Auteur',         Title => 'Titre',   Length => 'Longueur',   Pages => 'pages'  },
     'fi' => { Publisher => 'Kustantaja',    Author => 'Kirjoittaja',    Title => 'Otsikko', Length => 'Pituus',     Pages => 'sivua'  },
-    'nl' => { Publisher => 'Uitgever',      Author => 'Auteur',         Title => 'Titel',   Length => 'Lengte',     Pages => q[pagina's]  },
+    'nl' => { Publisher => 'Uitgever',      Author => 'Auteur',         Title => 'Titel',   Length => 'Lengte',     Pages => [ q{pagina's}, 'pagina&#39;s' ] },
     'md' => { Publisher => 'Editor',        Author => 'Autor',          Title => 'Titlu',   Length => 'Lungime',    Pages => 'pagini'  },
-    'ru' => { Publisher => ['Издатель', qr/\Q\x{418}\x{437}\x{434}\x{430}\x{442}\x{435}\x{43b}\x{44c}\E/ ],
+    'ru' => { Publisher => ['Издатель', qr/\Q\x{418}\x{437}\x{434}\x{430}\x{442}\x{435}\x{43b}\x{44c}\E/, '&#x418;&#x437;&#x434;&#x430;&#x442;&#x435;&#x43B;&#x44C;', '&ETH;&#152;&ETH;&middot;&ETH;&acute;&ETH;&deg;&Ntilde;&#130;&ETH;&micro;&ETH;&raquo;&Ntilde;&#140;' ],
                                             Author => 'Автор',          Title => 'Название',
-                                                                                            Length => [ 'Количество страниц', qr/\Q\x{41a}\x{43e}\x{43b}\x{438}\x{447}\x{435}\x{441}\x{442}\x{432}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}/ ],
-                                                                                                                    Pages => [ 'Всего страниц:', qr/\Q\x{412}\x{441}\x{435}\x{433}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}:/ ] },
-    'iw' => { Publisher => '\\x\{5d4\}\\x\{5d5\}\\x\{5e6\}\\x\{5d0\}\\x\{5d4\}',
-                                            Author => 'Author',         Title => 'Title',   Length => '\\x\{5d0\}\\x\{5d5\}\\x\{5e8\}\\x\{5da\}',
-                                                                                                                    Pages => '\\x\{5e2\}\\x\{5de\}\\x\{5d5\}\\x\{5d3\}\\x\{5d9\}\\x\{5dd\}'  }
+                                                                                            Length => [ 'Количество страниц', qr/\Q\x{41a}\x{43e}\x{43b}\x{438}\x{447}\x{435}\x{441}\x{442}\x{432}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}/, '&#x41A;&#x43E;&#x43B;&#x438;&#x447;&#x435;&#x441;&#x442;&#x432;&#x43E; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;', '&ETH;&#154;&ETH;&frac34;&ETH;&raquo;&ETH;&cedil;&Ntilde;&#135;&ETH;&micro;&Ntilde;&#129;&Ntilde;&#130;&ETH;&sup2;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;' ],
+                                                                                                                    Pages => [ 'Всего страниц:', qr/\Q\x{412}\x{441}\x{435}\x{433}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}:/, '&#x412;&#x441;&#x435;&#x433;&#x43E; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;:', '&ETH;&#146;&Ntilde;&#129;&ETH;&micro;&ETH;&sup3;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;', '&ETH;&#146;&Ntilde;&#129;&ETH;&micro;&ETH;&sup3;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;:' ] },
+    'iw' => { Publisher => [ '\x{5d4}\x{5d5}\x{5e6}\x{5d0}\x{5d4}', '&#x5D4;&#x5D5;&#x5E6;&#x5D0;&#x5D4;' ],
+                                            Author => 'Author',         Title => 'Title',   Length => [ qr/\Q\x{5d0}\x{5d5}\x{5e8}\x{5da}\E/, '××•×¨×š', '\x{5d0}\x{5d5}\x{5e8}\x{5da}', '&#x5D0;&#x5D5;&#x5E8;&#x5DA;' ],
+                                                                                                                    Pages => [ qr/\Q\x{5e2}\x{5de}\x{5d5}\x{5d3}\x{5d9}\x{5dd}\E/, '×¢×ž×•×“×™×', '\x{5e2}\x{5de}\x{5d5}\x{5d3}\x{5d9}\x{5dd}', '&#x5E2;&#x5DE;&#x5D5;&#x5D3;&#x5D9;&#x5DD;' ]  }
 );
 
 #--------------------------------------------------------------------------
@@ -112,7 +117,8 @@ sub search {
 	my $mech = WWW::Mechanize->new();
     $mech->agent_alias( 'Linux Mozilla' );
 
-    eval { $mech->get( SEARCH . $ean ) };
+    my $search = ($ENV{GOOGLE_DOMAIN} || $DOMAIN) . SEARCH . $ean;
+    eval { $mech->get( $search ) };
     return $self->handler("GoogleBooks website appears to be unavailable.")
 	    if($@ || !$mech->success() || !$mech->content());
 
@@ -129,9 +135,10 @@ sub search {
 #print STDERR "\n# code=".Dumper($code);
 
     return $self->handler("Failed to find that book on GoogleBooks website.")
-	    unless($code->{'ISBN:'.$isbn});
+	    unless($code->{'ISBN:'.$ean} || $code->{'ISBN:'.$isbn});
 
-    $data->{url} = $code->{'ISBN:'.$isbn}{info_url};
+    $data->{url}   = $code->{'ISBN:'.$ean }{info_url};
+    $data->{url} ||= $code->{'ISBN:'.$isbn}{info_url};
 
     return $self->handler("Failed to find that book on GoogleBooks website.")
 	    unless($data->{url});
@@ -141,8 +148,11 @@ sub search {
 	    if($@ || !$mech->success() || !$mech->content());
 
 	# The Book page
-    my $html = $mech->content();
-    $json =~ s/&#39;/'/;
+    #my $html = $mech->content();
+    my $html = encode_entities($mech->content(),'^\n\x20-\x25\x27-\x7e');
+    $html =~ s/\&amp;#39;/&#39;/sig;
+    $html =~ s/\\x\(([a-z\d]+)\)/\&#$1;/sig;
+    $html =~ s/&#55;/7/sig;
 
 	return $self->handler("Failed to find that book on GoogleBooks website. [$isbn]")
 		if($html =~ m!Sorry, we couldn't find any matches for!si);
@@ -181,6 +191,8 @@ sub search {
         $data->{thumb} = $data->{image};
     }
 
+    my $url = $mech->uri();
+
 	my $bk = {
 		'ean13'		    => $data->{isbn13},
 		'isbn13'		=> $data->{isbn13},
@@ -188,7 +200,7 @@ sub search {
 		'isbn'			=> $data->{isbn13},
 		'author'		=> $data->{author},
 		'title'			=> $data->{title},
-		'book_link'		=> $mech->uri(),
+		'book_link'		=> "$url",
 		'image_link'	=> $data->{image},
 		'thumb_link'	=> $data->{thumb},
 		'pubdate'		=> $data->{pubdate},
@@ -222,6 +234,8 @@ sub _match {
     my ($html, $data, $lang) = @_;
     my ($publisher);
 
+#print "\n# lang=$lang\n";
+
     # Some pages can present publisher text in multiple styles
     my @pubs = ref($LANG{$lang}->{Publisher}) eq 'ARRAY' ? @{$LANG{$lang}->{Publisher}} : ($LANG{$lang}->{Publisher});
     for my $pub (@pubs) {
@@ -239,9 +253,9 @@ sub _match {
     my @pages   = ref($LANG{$lang}->{Pages})  eq 'ARRAY' ? @{$LANG{$lang}->{Pages}}  : ($LANG{$lang}->{Pages});
     for my $length (@lengths) {
         for my $page (@pages) {
-            ($data->{pages}) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+) $page(?:</span>)?</td>!s;
+            ($data->{pages}) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?(\d+)\s*$page(?:</span>)?</td>!si;
             last    if($data->{pages});
-            ($data->{pages}) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?$page\s+(\d+)(?:</span>)?</td>!s;
+            ($data->{pages}) = $html =~ m!<td class="metadata_label">(?:<span[^>]*>)?$length(?:</span>)?</td><td class="metadata_value">(?:<span[^>]*>)?\s*$page\s+(\d+)(?:</span>)?</td>!si;
             last    if($data->{pages});
         }
         last    if($data->{pages});
