@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.25';
+$VERSION = '0.26';
 
 #--------------------------------------------------------------------------
 
@@ -49,20 +49,22 @@ use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 my %LANG = (
     'cz' => { Publisher => 'Vydavatel',     Author => 'Autor',          Title => 'Titul',   Length => [ 'Délka', qr/\QD\x{e9}lka\E/, 'D&eacute;lka' ],
-                                                                                                                    Pages => [ 'Počet stran:', qr/\QPo\x{10d}et stran:\E/, 'Po&#x10D;et stran:' ] },
-    'de' => { Publisher => 'Verlag',        Author => 'Autor',          Title => 'Titel',   Length => qr{L.+nge},   Pages => 'Seiten' },
-    'en' => { Publisher => 'Publisher',     Author => 'Author',         Title => 'Title',   Length => 'Length',     Pages => 'pages'  },
-    'fr' => { Publisher => '.+diteur',      Author => 'Auteur',         Title => 'Titre',   Length => 'Longueur',   Pages => 'pages'  },
-    'fi' => { Publisher => 'Kustantaja',    Author => 'Kirjoittaja',    Title => 'Otsikko', Length => 'Pituus',     Pages => 'sivua'  },
-    'nl' => { Publisher => 'Uitgever',      Author => 'Auteur',         Title => 'Titel',   Length => 'Lengte',     Pages => [ q{pagina's}, 'pagina&#39;s' ] },
-    'md' => { Publisher => 'Editor',        Author => 'Autor',          Title => 'Titlu',   Length => 'Lungime',    Pages => 'pagini'  },
+                                                                                                                        Pages => [ 'Počet stran:', qr/\QPo\x{10d}et stran:\E/, 'Po&#x10D;et stran:' ] },
+    'de' => { Publisher => 'Verlag',        Author => 'Autor',          Title => 'Titel',   Length => qr{L.+nge},       Pages => 'Seiten' },
+    'en' => { Publisher => 'Publisher',     Author => 'Author',         Title => 'Title',   Length => 'Length',         Pages => 'pages'  },
+    'es' => { Publisher => 'Editor',        Author => 'Autor',          Title => 'Título',  Length => [ 'N.º de páginas', 'N.&ordm; de p&aacute;ginas' ], 
+                                                                                                                        Pages => [ 'páginas', 'p&aacute;ginas' ]  },
+    'fr' => { Publisher => '.+diteur',      Author => 'Auteur',         Title => 'Titre',   Length => 'Longueur',       Pages => 'pages'  },
+    'fi' => { Publisher => 'Kustantaja',    Author => 'Kirjoittaja',    Title => 'Otsikko', Length => 'Pituus',         Pages => 'sivua'  },
+    'nl' => { Publisher => 'Uitgever',      Author => 'Auteur',         Title => 'Titel',   Length => 'Lengte',         Pages => [ q{pagina's}, 'pagina&#39;s' ] },
+    'md' => { Publisher => 'Editor',        Author => 'Autor',          Title => 'Titlu',   Length => 'Lungime',        Pages => 'pagini'  },
     'ru' => { Publisher => ['Издатель', qr/\Q\x{418}\x{437}\x{434}\x{430}\x{442}\x{435}\x{43b}\x{44c}\E/, '&#x418;&#x437;&#x434;&#x430;&#x442;&#x435;&#x43B;&#x44C;', '&ETH;&#152;&ETH;&middot;&ETH;&acute;&ETH;&deg;&Ntilde;&#130;&ETH;&micro;&ETH;&raquo;&Ntilde;&#140;' ],
                                             Author => 'Автор',          Title => 'Название',
                                                                                             Length => [ 'Количество страниц', qr/\Q\x{41a}\x{43e}\x{43b}\x{438}\x{447}\x{435}\x{441}\x{442}\x{432}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}/, '&#x41A;&#x43E;&#x43B;&#x438;&#x447;&#x435;&#x441;&#x442;&#x432;&#x43E; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;', '&ETH;&#154;&ETH;&frac34;&ETH;&raquo;&ETH;&cedil;&Ntilde;&#135;&ETH;&micro;&Ntilde;&#129;&Ntilde;&#130;&ETH;&sup2;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;' ],
-                                                                                                                    Pages => [ 'Всего страниц:', qr/\Q\x{412}\x{441}\x{435}\x{433}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}:/, '&#x412;&#x441;&#x435;&#x433;&#x43E; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;:', '&ETH;&#146;&Ntilde;&#129;&ETH;&micro;&ETH;&sup3;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;', '&ETH;&#146;&Ntilde;&#129;&ETH;&micro;&ETH;&sup3;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;:' ] },
+                                                                                                                        Pages => [ 'Всего страниц:', qr/\Q\x{412}\x{441}\x{435}\x{433}\x{43e} \x{441}\x{442}\x{440}\x{430}\x{43d}\x{438}\x{446}:/, '&#x412;&#x441;&#x435;&#x433;&#x43E; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;:', '&ETH;&#146;&Ntilde;&#129;&ETH;&micro;&ETH;&sup3;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;', '&ETH;&#146;&Ntilde;&#129;&ETH;&micro;&ETH;&sup3;&ETH;&frac34; &Ntilde;&#129;&Ntilde;&#130;&Ntilde;&#128;&ETH;&deg;&ETH;&frac12;&ETH;&cedil;&Ntilde;&#134;:' ] },
     'iw' => { Publisher => [ '\x{5d4}\x{5d5}\x{5e6}\x{5d0}\x{5d4}', '&#x5D4;&#x5D5;&#x5E6;&#x5D0;&#x5D4;' ],
                                             Author => 'Author',         Title => 'Title',   Length => [ qr/\Q\x{5d0}\x{5d5}\x{5e8}\x{5da}\E/, '××•×¨×š', '\x{5d0}\x{5d5}\x{5e8}\x{5da}', '&#x5D0;&#x5D5;&#x5E8;&#x5DA;' ],
-                                                                                                                    Pages => [ qr/\Q\x{5e2}\x{5de}\x{5d5}\x{5d3}\x{5d9}\x{5dd}\E/, '×¢×ž×•×“×™×', '\x{5e2}\x{5de}\x{5d5}\x{5d3}\x{5d9}\x{5dd}', '&#x5E2;&#x5DE;&#x5D5;&#x5D3;&#x5D9;&#x5DD;' ]  }
+                                                                                                                        Pages => [ qr/\Q\x{5e2}\x{5de}\x{5d5}\x{5d3}\x{5d9}\x{5dd}\E/, '×¢×ž×•×“×™×', '\x{5e2}\x{5de}\x{5d5}\x{5d3}\x{5d9}\x{5dd}', '&#x5E2;&#x5DE;&#x5D5;&#x5D3;&#x5D9;&#x5DD;' ]  }
 );
 
 #--------------------------------------------------------------------------

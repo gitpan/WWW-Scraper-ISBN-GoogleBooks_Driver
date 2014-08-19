@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => $ENV{AUTHOR_TESTING} ? 272 : 32;
+use Test::More tests => $ENV{AUTHOR_TESTING} ? 302 : 32;
 use WWW::Scraper::ISBN;
 use Data::Dumper;
 
@@ -16,6 +16,7 @@ my @TEST_DOMAINS = (
 
 push @TEST_DOMAINS, (
     'http://books.google.de',
+    'http://books.google.es',
     'http://books.google.fr',
     'http://books.google.fi',
     'http://books.google.md',

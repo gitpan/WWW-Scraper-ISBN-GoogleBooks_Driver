@@ -8,7 +8,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     AUTHOR              => 'Barbie <barbie@cpan.org>',
-    NAME                => 'WWW-Scraper-ISBN-GoogleBooks_Driver',
+    NAME                => 'WWW::Scraper::ISBN::GoogleBooks_Driver',
     VERSION_FROM        => 'lib/WWW/Scraper/ISBN/GoogleBooks_Driver.pm',
     ABSTRACT            => 'Search driver for GoogleBooks online book catalog',
     NO_META             => 1,
