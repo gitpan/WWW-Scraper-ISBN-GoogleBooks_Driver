@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                   WWW-Scraper-ISBN-GoogleBooks_Driver
-version:                0.26
+version:                0.27
 abstract:               Search driver for Google Books online book catalog
 author:
   - Barbie <barbie@cpan.org>
@@ -28,7 +28,7 @@ build_requires:
 provides:
   WWW::Scraper::ISBN::GoogleBooks_Driver:
     file:     lib/WWW/Scraper/ISBN/GoogleBooks_Driver.pm
-    version:  0.26
+    version:  0.27
 no_index:
   directory:
     - t
@@ -42,4 +42,4 @@ resources:
 meta-spec:
    version:   1.4
    url:       http://module-build.sourceforge.net/META-spec-v1.4.html
-generated_by: Hand 1.0
+generated_by: The Hand of Barbie 1.0
