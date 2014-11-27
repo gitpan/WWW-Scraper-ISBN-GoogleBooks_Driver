@@ -15,6 +15,7 @@ WriteMakefile(
     PREREQ_PM           => {
 
         # prereqs
+        'HTML::Entities'                => '0',
 		'JSON'			                => '0',
         'WWW::Mechanize'                => '1.60',
         'WWW::Scraper::ISBN'            => '1.00',
