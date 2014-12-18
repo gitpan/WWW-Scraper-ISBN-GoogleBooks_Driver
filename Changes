@@ -1,6 +1,9 @@
 Revision history for WWW-Scraper-ISBN-GoogleBooks_Driver
 ========================================================
 
+0.29    2014-12-18
+        - fixed test data.
+
 0.28    2014-11-27
         - fixed missing prerequisite.
 

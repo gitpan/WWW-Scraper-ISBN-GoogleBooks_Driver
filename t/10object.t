@@ -37,8 +37,8 @@ my %tests = (
         [ 'like',   'publisher',    qr|Faber|           ],
         [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        '309'               ],
-        [ 'like',   'image_link',   qr!(bks\d+.books.google.[\w.]+/books\?id=\w+|browse.php)!   ],
-        [ 'like',   'thumb_link',   qr!(bks\d+.books.google.[\w.]+/books\?id=\w+|browse.php)!   ],
+        [ 'like',   'image_link',   qr!(books.google.[\w.]+/books/content\?id=\w+|browse.php)!   ],
+        [ 'like',   'thumb_link',   qr!(books.google.[\w.]+/books/content\?id=\w+|browse.php)!   ],
         [ 'like',   'description',  qr!Learn how the big bang may have been spawned!            ],
         [ 'like',   'book_link',    qr!books.google.[\w.]+/books\?id=\w+!                       ]
     ],
@@ -52,8 +52,8 @@ my %tests = (
         [ 'like',   'publisher',    qr!(Macmillan|Faber \S+ Faber)! ],
         [ 'is',     'pubdate',      '2007'              ],
         [ 'is',     'pages',        240                 ],
-        [ 'like',   'image_link',   qr!(bks\d+.books.google.[\w.]+/books\?id=\w+|browse.php)!   ],
-        [ 'like',   'thumb_link',   qr!(bks\d+.books.google.[\w.]+/books\?id=\w+|browse.php)!   ],
+        [ 'like',   'image_link',   qr!(books.google.[\w.]+/books/content\?id=\w+|browse.php)!   ],
+        [ 'like',   'thumb_link',   qr!(books.google.[\w.]+/books/content\?id=\w+|browse.php)!   ],
         [ 'like',   'description',  qr!Ian Curtis left behind a legacy rich in artistic genius! ],
         [ 'like',   'book_link',    qr!books.google.[\w.]+/books\?id=\w+!               ]
     ],
